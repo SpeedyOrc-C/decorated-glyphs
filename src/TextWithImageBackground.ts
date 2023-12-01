@@ -12,21 +12,24 @@ export default class TextWithImageBackground {
         this.background = background
     }
 
-    mount(parent: HTMLElement) {
+    generateHash(): string {
         if (TextWithImageBackground.hashCounterLock) {
             throw new Error("This is a rare error. Please mount slowly.")
         }
         TextWithImageBackground.hashCounterLock = true
-        const hash =
-            new Date().getTime().toString(36)
+        const hash = new Date().getTime().toString(36)
             + TextWithImageBackground.hashCounter.toString(36)
-
         TextWithImageBackground.hashCounter += 1
         if (TextWithImageBackground.hashCounter > 36*36*36*36) {
             TextWithImageBackground.hashCounter = 0
         }
         TextWithImageBackground.hashCounterLock = false
 
+        return hash
+    }
+
+    mount(parent: HTMLElement) {
+        const hash = this.generateHash()
         const className = "text-with-image-background-" + hash
 
         const element = document.createElement("div")
@@ -55,5 +58,33 @@ export default class TextWithImageBackground {
         parent.appendChild(element)
         document.styleSheets[0].insertRule(style, 0)
         document.styleSheets[0].insertRule(innerStyle, 0)
+    }
+
+    htmlCss(): [string, [string, string]] {
+        const hash = this.generateHash()
+        const className = "text-with-image-background-" + hash
+
+        let html = `<div class="${className}">`
+        for (let i = 0; i < this.text.length; i += 1) {
+            html += `<div>${htmlEscapeChar(this.text.charAt(i))}</div>`
+        }
+        html += "</div>"
+
+        const style = `
+            .${className} {
+                display: flex;
+            }`
+
+        const innerStyle = `
+            .${className} > div {
+                width: fit-content;
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-size: 100% 100%;
+                background-image: url("${this.background}");
+            }`
+
+        return [html, [style, innerStyle]]
     }
 }
