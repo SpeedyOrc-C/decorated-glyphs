@@ -134,9 +134,10 @@ export default class TextWithImageBackground
 
         traverseTextNodes(body, node =>
         {
-            if (node.parent?.children.length !== 1 ?? true) {
+            if (node.parent != null && node.parent.children.length !== 1) {
                 throw new Error("Tags are not fully flattened.")
             }
+
             const text = node.text
             const textWithImageBackground = new TextWithImageBackground(
                 text, textBackground, fontSize, background, foreground)
