@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   crazy-parser:
-    specifier: ^0.4.0
-    version: 0.4.0
+    specifier: ^0.4.2
+    version: 0.4.2
 
 devDependencies:
   '@types/jest':
@@ -1391,8 +1391,8 @@ packages:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
     dev: true
 
-  /crazy-parser@0.4.0:
-    resolution: {integrity: sha512-m0ox5PjdwIUzcItXNE/MqFCu1f1nX6Nv0LZ7U+ajZEqiinXlGJZHIr93exYIHCUIVT3O3WKduKEpDu9XadB2HQ==}
+  /crazy-parser@0.4.2:
+    resolution: {integrity: sha512-0DaSCgzEfu4WJubetLi6LM3R8qA3eycCG6Wqf2xAYRnn1PLF88NhtQHRaD3wmiJNqz4+wv7lQqxv1WNEwR/0Iw==}
     dev: false
 
   /create-jest@29.7.0(@types/node@20.10.0)(ts-node@10.9.1):

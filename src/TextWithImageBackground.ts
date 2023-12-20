@@ -49,12 +49,12 @@ export default class TextWithImageBackground
                         ...this.background != null && character != " " ?
                             [div([["class", "background"]])] : [],
                         div([["class", "glyph"]], [
-                            new TextNode(htmlEscapeChar(character))
+                            new TextNode(character)
                         ]),
                         ...this.foreground != null && character != " " ?
                             [div([["class", "foreground"]])] : [],
                         div([["class", "placeholder"]], [
-                            new TextNode(htmlEscapeChar(character))
+                            new TextNode(character)
                         ]),
                     ]))
                 ))

@@ -1,6 +1,6 @@
 {
   "name": "decorated-glyphs",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -16,7 +16,7 @@
   "author": "chen-zhanming",
   "license": "MIT",
   "dependencies": {
-    "crazy-parser": "^0.4.0"
+    "crazy-parser": "^0.4.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.10",
