@@ -2,6 +2,7 @@ import {htmlEscapeChar} from "./HtmlEscape";
 import BreakBasedSplitter from "./BreakBasedSplitter";
 import {div, documentP, Tag, TextNode} from "crazy-parser";
 import {traverseTextNodes} from "./Traverser";
+import TextWithImageBackgroundConfig from "./TextWithImageBackgroundConfig";
 
 export default class TextWithImageBackground
 {
@@ -10,12 +11,9 @@ export default class TextWithImageBackground
     private readonly hash: string
 
     constructor(
-        public text: string,
-        public textBackground: string,
-        public fontSize: string | null = "1rem",
-        public background: string | null = null,
-        public foreground: string | null = null,
-    )
+        private readonly text: string,
+        private readonly textBackground: string,
+        private readonly config: TextWithImageBackgroundConfig)
     {
         this.hash = this.generateHash()
     }
@@ -42,27 +40,38 @@ export default class TextWithImageBackground
         const idName = "text-with-image-background-" + this.hash
         const words = BreakBasedSplitter.split(this.text)
 
-        const body =
-            div([["id", idName]],
-                words.map(word => div([["class", "word"]],
-                    word.map(character => div([["class", "character"]], [
-                        ...this.background != null && character != " " ?
-                            [div([["class", "background"]])] : [],
-                        div([["class", "glyph"]], [
-                            new TextNode(character)
-                        ]),
-                        ...this.foreground != null && character != " " ?
-                            [div([["class", "foreground"]])] : [],
-                        div([["class", "placeholder"]], [
-                            new TextNode(character)
-                        ]),
-                    ]))
-                ))
-            )
+        const bodyClasses: string[] = [
+            ...this.config.stretchTextBackground ? ["stretch-text-bg"] : [],
+            ...this.config.stretchBackground ? ["stretch-bg"] : [],
+            ...this.config.stretchForeground ? ["stretch-fg"] : [],
+        ]
+
+        const body = div([["id", idName], ["class", bodyClasses.join(" ")]],
+            words.map(word => div([["class", "word"]],
+                word.map(character => div([["class", "character"]], [
+                    ...this.config.background != null && character != " " ?
+                        [div([["class", "background"]])] : [],
+                    div([["class", "glyph"]], [
+                        new TextNode(character)
+                    ]),
+                    ...this.config.foreground != null && character != " " ?
+                        [div([["class", "foreground"]])] : [],
+                    div([["class", "placeholder"]], [
+                        new TextNode(character)
+                    ]),
+                ]))
+            ))
+        )
 
         const styleWord = [
             `#${idName} .word {`,
-                `display: inline-block;`,
+            `display: inline-block;`,
+            `}`,
+        ].join("")
+
+        const styleWordRtl = [
+            `html[dir="rtl"] #${idName} .word {`,
+            `float: right;`,
             `}`,
         ].join("")
 
@@ -70,61 +79,117 @@ export default class TextWithImageBackground
             `#${idName} .character {`,
             `display: inline-block;`,
             `position: relative;`,
-            `font-size: ${this.fontSize};`,
+            `font-size: ${this.config.fontSize};`,
             `}`,
         ].join("")
 
-        const styleBackground: string = [
-            `#${idName} .background {`,
-            `position: absolute;`,
-            `height: 100%;`,
-            `width: 100%;`,
-            `background-image: url("${this.background}");`,
-            `background-size: 100% 100%;`,
+        const styleCharacterRtl: string = [
+            `html[dir="rtl"] #${idName} .character {`,
+            `float: right;`,
             `}`,
         ].join("")
 
         const styleGlyph: string = [
             `#${idName} .glyph {`,
             `position: absolute;`,
-            `background-image: url("${this.textBackground}");`,
+            `background-image: url("${htmlEscapeChar(this.textBackground)}");`,
             `-webkit-background-clip: text;`,
             `background-clip: text;`,
-            `-webkit-text-fill-color: transparent;`,
+            `color: transparent;`,
+            `background-position-x: center;`,
+            `background-size: auto 100%;`,
+            `}`,
+        ].join("")
+
+        const styleGlyphStretch: string = [
+            `#${idName}.stretch-text-bg .glyph {`,
             `background-size: 100% 100%;`,
             `}`,
         ].join("")
 
-        const styleForeground: string = [
+        const styleForeground: string | null = this.config.foreground != null ? [
             `#${idName} .foreground {`,
+            `background-image: url("${htmlEscapeChar(this.config.foreground)}");`,
+            `background-size: auto 100%;`,
+            `}`,
+        ].join("") : null
+
+        const styleForegroundStretch: string | null = this.config.foreground != null ? [
+            `#${idName}.stretch-fg .foreground {`,
+            `background-size: 100% 100%;`,
+            `}`,
+        ].join("") : null
+
+        const styleBackground: string | null = this.config.background != null ? [
+            `#${idName} .background {`,
+            `background-image: url("${htmlEscapeChar(this.config.background)}");`,
+            `background-size: auto 100%;`,
+            `}`,
+        ].join("") : null
+
+        const styleBackgroundStretch: string | null = this.config.background != null ? [
+            `#${idName}.stretch-bg .background {`,
+            `background-size: 100% 100%;`,
+            `}`,
+        ].join("") : null
+
+        const styleBackgroundForeground: string = [
+            `#${idName} .background, #${idName} .foreground {`,
             `position: absolute;`,
             `height: 100%;`,
             `width: 100%;`,
-            `background-image: url("${this.foreground}");`,
+            `background-position-x: center;`,
+            `background-size: auto 100%;`,
+            `}`,
+        ].join("")
+
+        const styleBackgroundForegroundStretch: string = [
+            `#${idName}.stretch .background, #${idName}.stretch .foreground {`,
             `background-size: 100% 100%;`,
             `}`,
         ].join("")
 
-        const stylePlaceholder: string = [
-            `#${idName} .placeholder {`,
-                `color: transparent;`,
+        const styleBackgroundForegroundGlyph: string = [
+            `#${idName} .background, #${idName} .foreground, #${idName} .glyph {`,
+            `-webkit-user-select: none;`,
+            `-moz-user-select: none;`,
+            `user-select: none;`,
             `}`,
         ].join("")
 
-        return [body, [
-            styleWord, styleCharacter,
-            styleBackground, styleGlyph,
-            styleForeground, stylePlaceholder,
-        ]]
+
+        const stylePlaceholder: string = [
+            `#${idName} .placeholder {`,
+            `color: transparent;`,
+            `}`,
+        ].join("")
+
+        const styles: string[] = [
+            styleWord,
+            styleWordRtl,
+            styleCharacter,
+            styleCharacterRtl,
+            styleGlyph,
+            styleGlyphStretch,
+            styleBackgroundForeground,
+            styleBackgroundForegroundStretch,
+            styleBackgroundForegroundGlyph,
+            stylePlaceholder,
+        ]
+
+        if (styleForeground != null) styles.push(styleForeground)
+        if (styleBackground != null) styles.push(styleBackground)
+        if (styleForegroundStretch != null) styles.push(styleForegroundStretch)
+        if (styleBackgroundStretch != null) styles.push(styleBackgroundStretch)
+
+        return [body, styles]
     }
 
     static async convert(
         rawHtml: string,
         textBackground: string,
-        fontSize: string = "1rem",
-        title: string | null = "Untitled",
-        background: string | null = null,
-        foreground: string | null = null): Promise<string>
+        config = new TextWithImageBackgroundConfig(),
+    ): Promise<string>
     {
         const [tags] = await documentP(rawHtml)
         const body = new Tag("body", [], tags)
@@ -139,8 +204,8 @@ export default class TextWithImageBackground
             }
 
             const text = node.text
-            const textWithImageBackground = new TextWithImageBackground(
-                text, textBackground, fontSize, background, foreground)
+            const textWithImageBackground =
+                new TextWithImageBackground(text, textBackground, config)
             const [body, styles_] = textWithImageBackground.component()
 
             node.replaceWith(body)
@@ -152,7 +217,6 @@ export default class TextWithImageBackground
             `<html>`,
             `<head>`,
             `<meta charset="UTF-8">`,
-            `<title>${title}</title>`,
             `<style>${styles.join(" ")}</style>`,
             `</head>`,
             `${body.dump()}`,

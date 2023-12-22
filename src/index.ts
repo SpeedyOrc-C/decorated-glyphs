@@ -1,8 +1,9 @@
 import TextWithImageBackground from "./TextWithImageBackground";
 import BreakBasedSplitter from "./BreakBasedSplitter";
+import TextWithImageBackgroundConfig from "./TextWithImageBackgroundConfig";
 
-export function helloFromDecoratedGlyphs() {
-    console.log("Hello from decorated-glyphs!")
+export {
+    TextWithImageBackground,
+    BreakBasedSplitter,
+    TextWithImageBackgroundConfig,
 }
-
-export {TextWithImageBackground, BreakBasedSplitter}

@@ -1,6 +1,6 @@
 {
   "name": "decorated-glyphs",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -15,8 +15,9 @@
   "keywords": [],
   "author": "chen-zhanming",
   "license": "MIT",
+  "repository": { "url": "https://github.com/SpeedyOrc-C/decorated-glyphs" },
   "dependencies": {
-    "crazy-parser": "^0.4.2"
+    "crazy-parser": "^0.4.4"
   },
   "devDependencies": {
     "@types/jest": "^29.5.10",
