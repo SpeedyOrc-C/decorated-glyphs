@@ -1,4 +1,3 @@
-import {htmlEscapeChar} from "./HtmlEscape";
 import BreakBasedSplitter from "./BreakBasedSplitter";
 import {div, documentP, Tag, TextNode} from "crazy-parser";
 import {traverseTextNodes} from "./Traverser";
@@ -92,7 +91,7 @@ export default class TextWithImageBackground
         const styleGlyph: string = [
             `#${idName} .glyph {`,
             `position: absolute;`,
-            `background-image: url("${htmlEscapeChar(this.textBackground)}");`,
+            `background-image: url("${this.textBackground}");`,
             `-webkit-background-clip: text;`,
             `background-clip: text;`,
             `color: transparent;`,
@@ -109,7 +108,7 @@ export default class TextWithImageBackground
 
         const styleForeground: string | null = this.config.foreground != null ? [
             `#${idName} .foreground {`,
-            `background-image: url("${htmlEscapeChar(this.config.foreground)}");`,
+            `background-image: url("${this.config.foreground}");`,
             `background-size: auto 100%;`,
             `}`,
         ].join("") : null
@@ -122,7 +121,7 @@ export default class TextWithImageBackground
 
         const styleBackground: string | null = this.config.background != null ? [
             `#${idName} .background {`,
-            `background-image: url("${htmlEscapeChar(this.config.background)}");`,
+            `background-image: url("${this.config.background}");`,
             `background-size: auto 100%;`,
             `}`,
         ].join("") : null
